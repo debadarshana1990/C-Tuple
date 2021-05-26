@@ -2,7 +2,7 @@
  * tuple.c
  *
  *  Created on: 26-May-2021
- *      Author: pde5cob
+ *      Author: Debadarshana Parida
  */
 
 #include <tuple.h>
