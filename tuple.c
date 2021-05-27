@@ -13,6 +13,7 @@
 
 void Create_Entry(Tuple *obj,TYPE type,void *data)
 {
+   int DataSize = 1;
    /* Traverse to the end */
    TupleNode *temp = (TupleNode *)(malloc(sizeof(TupleNode)));
    if(NULL == temp)
@@ -22,8 +23,26 @@ void Create_Entry(Tuple *obj,TYPE type,void *data)
    }
    temp->next = NULL;
    temp->type = type;
-   temp->p = malloc(sizeof(getsize(type,0,data)));
-   memcpy(temp->p,data,getsize(type,0,data));
+   /* Find the size of data to allocate memory */
+   switch(type)
+   {
+      case INT: DataSize = 4;
+         break;
+      case STR:DataSize = strlen((char *)data);
+         break;
+      case FLOAT:DataSize = 4;
+         break;
+      case DOUBLE:DataSize = 8;
+         break;
+      case TUPLE:DataSize = sizeof(Tuple);
+         break;
+      default : DataSize =1;
+         printf("Unsupported data types.....\n");
+         exit(0);
+            break;
+      }
+   temp->p = malloc(DataSize);
+   memcpy(temp->p,data,DataSize);
    if(TRUE != obj->IsinitialAlloc)
    {
       obj->Head = temp;
@@ -52,11 +71,14 @@ int getsize(TYPE type,int len,void *data)
    }
    return ret;
 }
-int AddMember2Tuple(Tuple *obj,TYPE types,...)
+int TupleAdd(Tuple *obj,TYPE types,...)
 {
    va_list valist;
    int i;
    int var;
+   float fdata;
+   double ddata;
+   Tuple nest;
    va_start(valist, types);
    int count = 0;
    while (types != END)
@@ -74,23 +96,36 @@ int AddMember2Tuple(Tuple *obj,TYPE types,...)
                 Create_Entry(obj,types,(void *)&var);
                break;
            case FLOAT:
-              // fprintf(stdout, "arg[%d]: %f\n", count, va_arg(valist, double));
+               fdata = va_arg(valist, double);
+//               fprintf(stdout, "arg[%d]: %f\n", count, fdata);
+              Create_Entry(obj,types,(void *)&fdata);
+               break;
+           case DOUBLE:
+               ddata = va_arg(valist, double);
+//               fprintf(stdout, "arg[%d]: %f\n", count, ddata);
+              Create_Entry(obj,types,(void *)&ddata);
+               break;
+           case TUPLE:
+               nest = va_arg(valist, Tuple);
+//               fprintf(stdout, "arg[%d]: %f\n", count, ddata);
+              Create_Entry(obj,types,(void *)&nest);
                break;
            default:
                fprintf(stderr, "unknown type specifier\n");
                break;
        }
        types = va_arg(valist, TYPE);
+//       printf("types :%d\n",types);
        count += 1;
    }
    va_end(valist);
    obj->len += count;
 }
-int len(Tuple *obj)
+int TupleLen(Tuple *obj)
 {
    return obj->len;
 }
-void show(Tuple *obj)
+void TupleShow(Tuple *obj)
 {
    int i;
    TupleNode *temp;
@@ -114,6 +149,24 @@ void show(Tuple *obj)
             int val = *((int *)temp->p);
             printf("%d ",val);
           }
+         else if(FLOAT == temp->type)
+         {
+            float val = *((float *)temp->p);
+            printf("%f ",val);
+          }
+         else if(DOUBLE == temp->type)
+         {
+            double val = *((double *)temp->p);
+            printf("%lf ",val);
+         }
+         else if(TUPLE == temp->type)
+         {
+            TupleShow((Tuple *)temp->p);
+         }
+         else
+         {
+            printf("I do not understand the data type\n");
+         }
          if(NULL != temp->next)
          temp = temp->next;
       }
@@ -123,13 +176,17 @@ void show(Tuple *obj)
 int main()
 {
    Tuple obj;
+   Tuple obj1;
    memset(&obj,0,sizeof(obj));
-   //AddMember2Tuple(&obj,INT,5,INT,10,END);
-   AddMember2Tuple(&obj,STR,"Deba",INT,5,INT,10,END);
-   AddMember2Tuple(&obj,STR,"Done",INT,1,INT,5,END);
+   memset(&obj1,0,sizeof(obj1));
+   TupleAdd(&obj1,INT,7,INT,8,FLOAT,3.5,STR,"obj1",END);
+   //AddMember2Tuple(&obj,STR,"Deba",INT,5,INT,10,END);
+   TupleAdd(&obj,STR,"obj",INT,1,INT,5,FLOAT,3.2,DOUBLE,8.4,END);
+//   AddMember2Tuple(&obj,FLOAT,3.2,DOUBLE,8.0,END);
    //printf("length:%d\n",len(obj));
-   show(&obj);
-   printf("length :%d",len(&obj));
+   TupleAdd(&obj,TUPLE,obj1,END);
+   TupleShow(&obj);
+   printf("length :%d",TupleLen(&obj));
    return 0;
 }
 
