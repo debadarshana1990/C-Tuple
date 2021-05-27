@@ -12,6 +12,7 @@ typedef enum TYPE
    INT = 0,
    STR,
    FLOAT,
+   DOUBLE,
    TUPLE,
    END
 }TYPE;
@@ -33,10 +34,10 @@ typedef struct Tuple
    TupleNode *Head;
    TupleNode *Tail;
 }Tuple;
-int AddMember2Tuple(Tuple *obj,TYPE types,...);
+int TupleAdd(Tuple *obj,TYPE types,...);
 int getsize(TYPE type,int len,void *data);
 void Create_Entry(Tuple *obj,TYPE type,void *data);
-int len(Tuple *obj);
-void show(Tuple *obj);
+int TupleLen(Tuple *obj);
+void TupleShow(Tuple *obj);
 
 #endif /* TUPLE_H_ */
