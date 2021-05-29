@@ -38,7 +38,6 @@ static void FindAndDelete(Tuple *obj,TYPE type,void *data)
    }
    /* find the size of the data */
    int DataSize = 1;
-   printf("type:%d\n",type);
    switch(type)
    {
       case INT: DataSize = 4;
@@ -65,6 +64,7 @@ static void FindAndDelete(Tuple *obj,TYPE type,void *data)
          if(0 == memcmp(temp->p,data,DataSize))
          {
             obj->Head = temp->next; // Changed head
+            obj->len = obj->len - 1; // decrease the length by 1
             FreeTupleNode(temp); // free old head
             return;
          }
@@ -75,11 +75,16 @@ static void FindAndDelete(Tuple *obj,TYPE type,void *data)
       {
           prev = temp;
           temp = temp->next;
+          obj->len = obj->len - 1; // decrease the length by 1
       }
 
       // If key was not present in linked list
       if (temp == NULL)
-          return;
+      {
+         printf("Item not present\n");
+         return;
+      }
+          
 
       // Unlink the node from linked list
       prev->next = temp->next;
@@ -102,6 +107,10 @@ void TupleRemove(Tuple *obj,TYPE type,...)
       case STR:
          FindAndDelete(obj,type,(void *)va_arg(vaarg, char *));
          break;
+/*      case TUPLE:
+         FindAndDelete(obj,type,(void *)va_arg(vaarg, TYPE));
+         break;
+*/
       default : printf("Unsupported Type\n");
          break;
 

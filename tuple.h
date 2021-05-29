@@ -39,5 +39,7 @@ int getsize(TYPE type,int len,void *data);
 void Create_Entry(Tuple *obj,TYPE type,void *data);
 int TupleLen(Tuple *obj);
 void TupleShow(Tuple *obj);
+void TupleRemove(Tuple *obj,TYPE type,...);
+#define TupleAppend  TupleAdd
 
 #endif /* TUPLE_H_ */
