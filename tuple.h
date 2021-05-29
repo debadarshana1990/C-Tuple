@@ -41,5 +41,6 @@ int TupleLen(Tuple *obj);
 void TupleShow(Tuple *obj);
 void TupleRemove(Tuple *obj,TYPE type,...);
 #define TupleAppend  TupleAdd
+void TupleClear(Tuple *obj);
 
 #endif /* TUPLE_H_ */

@@ -117,3 +117,28 @@ void TupleRemove(Tuple *obj,TYPE type,...)
    }
 
 }
+void TupleClear(Tuple *obj)
+{
+      /* deref head_ref to get the real head */
+   TupleNode* current = obj->Head;
+   TupleNode* next;
+ 
+   while (current != NULL)
+   {
+       next = current->next;
+       printf("vaue :%d\n",*((int *)(current->p)));
+       if(TUPLE == current->type)
+         TupleClear((Tuple *)(current->p));
+      printf("1\n");
+       free(current->p);
+       printf("2\n");
+       free(current);
+       printf("3\n");
+       current = next;
+   }
+   printf("4\n");
+   /* deref head_ref to affect the real head back
+      in the caller. */
+   obj->Head = NULL;
+   obj->len = 0;
+}

@@ -131,7 +131,7 @@ void TupleShow(Tuple *obj)
    TupleNode *temp;
    if(0 == obj->len)
    {
-      printf("Entry Tuple");
+      printf("Empty Tuple");
       return;
    }
    else
